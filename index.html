@@ -87,7 +87,8 @@
 
         input[type="text"],
         input[type="email"],
-        input[type="tel"] {
+        input[type="tel"],
+        input[type="hidden"] {
             width: 100%;
             padding: 15px 20px;
             border: 2px solid #e1e8ed;
@@ -95,6 +96,10 @@
             font-size: 16px;
             transition: all 0.3s ease;
             background: #fafbfc;
+        }
+
+        input[type="hidden"] {
+            display: none;
         }
 
         input[type="text"]:focus,
@@ -175,6 +180,26 @@
             color: #e74c3c;
         }
 
+        .instructions {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #007bff;
+            display: none;
+        }
+
+        .instructions h3 {
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+
+        .instructions p {
+            color: #0056b3;
+            margin-bottom: 5px;
+            line-height: 1.5;
+        }
+
         @media (max-width: 600px) {
             .newsletter-container {
                 padding: 30px 20px;
@@ -199,7 +224,12 @@
             <p class="subtitle">Stay updated with the latest real estate insights, market trends, and exclusive opportunities in your area.</p>
         </div>
 
-        <form id="newsletterForm">
+        <form id="newsletterForm" action="https://formspree.io/f/xqazgqzy" method="POST">
+            <!-- Hidden fields for Formspree -->
+            <input type="hidden" name="_subject" value="KW Follow Up Boss Newsletter Lead">
+            <input type="hidden" name="_cc" value="lori.mcnicholas@followupboss.me">
+            <input type="hidden" name="_next" value="https://pahopkins.github.io/kw-newsletter-lmcnicholas/?success=true">
+            
             <div class="form-group">
                 <label for="name">Full Name <span class="required">*</span></label>
                 <input type="text" id="name" name="name" required placeholder="Enter your full name">
@@ -212,91 +242,94 @@
 
             <div class="form-group">
                 <label for="email">Email Address <span class="required">*</span></label>
-                <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                <input type="email" id="email" name="_replyto" required placeholder="your.email@example.com">
             </div>
 
-            <button type="button" class="submit-btn" id="submitBtn" onclick="handleSubmit()">
+            <!-- Hidden message field with lead information -->
+            <input type="hidden" id="message" name="message" value="">
+
+            <button type="submit" class="submit-btn" id="submitBtn">
                 Subscribe to Newsletter
             </button>
 
-            <div id="message" class="message"></div>
+            <div id="messageDiv" class="message"></div>
+            
+            <div id="instructions" class="instructions">
+                <h3>✅ Thank You!</h3>
+                <p>Your newsletter subscription request has been submitted successfully!</p>
+                <p><strong>What happens next:</strong></p>
+                <p>• Your information has been sent to our team</p>
+                <p>• We'll add you to our newsletter list</p>
+                <p>• You'll start receiving market updates and exclusive opportunities</p>
+                <p>• Our team may contact you directly with relevant opportunities</p>
+            </div>
         </form>
     </div>
 
-    <!-- EmailJS SDK -->
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-    
     <script>
-        // Initialize EmailJS when page loads
-        (function() {
-            emailjs.init("qzw9aUvKX4QS6uKTT");
-            console.log('EmailJS initialized successfully');
-        })();
+        // Check for success parameter in URL
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success') === 'true') {
+                document.getElementById('instructions').style.display = 'block';
+                showMessage('Thank you! You\'ve been successfully added to our newsletter. We\'ll be in touch soon!', 'success');
+                // Clear the URL parameter
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
 
-        function handleSubmit() {
-            console.log('Button clicked!');
-            
-            const submitBtn = document.getElementById('submitBtn');
+        document.getElementById('newsletterForm').addEventListener('submit', function(e) {
             const name = document.getElementById('name').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const email = document.getElementById('email').value.trim();
             
-            console.log('Form data:', {name, phone, email});
-            
             // Basic validation
             if (!name || !phone || !email) {
+                e.preventDefault();
                 showMessage('Please fill in all required fields.', 'error');
-                return;
+                return false;
             }
             
             // Email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
+                e.preventDefault();
                 showMessage('Please enter a valid email address.', 'error');
-                return;
+                return false;
             }
             
-            // Show loading
-            submitBtn.innerHTML = '<span class="loading"></span>Sending...';
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span>Submitting...';
             
-            // Prepare template parameters
-            const templateParams = {
-                name: name,
-                phone: phone,
-                email: email
-            };
+            // Format the message for the email
+            const formattedMessage = `New Newsletter Signup Lead
+
+Contact Information:
+Name: ${name}
+Phone: ${phone}
+Email: ${email}
+
+Action Required: Please create a new contact in Follow Up Boss with the above information.
+
+This lead was generated from the KW Newsletter signup form on ${new Date().toLocaleDateString()}.`;
+
+            // Set the hidden message field
+            document.getElementById('message').value = formattedMessage;
             
-            console.log('Sending email with EmailJS...');
-            
-            // Send email using EmailJS
-            emailjs.send('service_p3n7lcv', 'template_l9osqlk', templateParams)
-                .then(function(response) {
-                    console.log('Email sent successfully:', response);
-                    showMessage('Thank you! You\'ve been successfully added to our newsletter. We\'ll be in touch soon!', 'success');
-                    
-                    // Reset form
-                    document.getElementById('newsletterForm').reset();
-                })
-                .catch(function(error) {
-                    console.error('EmailJS Error:', error);
-                    showMessage('Sorry, there was an error processing your request. Please try again.', 'error');
-                })
-                .finally(function() {
-                    // Reset button
-                    submitBtn.innerHTML = 'Subscribe to Newsletter';
-                    submitBtn.disabled = false;
-                });
-        }
+            // Form will submit naturally to Formspree
+            showMessage('Submitting your request...', 'success');
+        });
         
         function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
+            const messageDiv = document.getElementById('messageDiv');
             messageDiv.textContent = text;
             messageDiv.className = `message ${type}`;
             messageDiv.style.display = 'block';
             
-            // Hide message after 5 seconds for success messages
-            if (type === 'success') {
+            // Hide message after 5 seconds for error messages
+            if (type === 'error') {
                 setTimeout(() => {
                     messageDiv.style.display = 'none';
                 }, 5000);
@@ -314,7 +347,7 @@
             e.target.value = value;
         });
         
-        console.log('JavaScript loaded successfully!');
+        console.log('Form loaded successfully - using Formspree for reliable email delivery!');
     </script>
 </body>
 </html>
