@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsletter Signup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .newsletter-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #c8102e, #e91e3e);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(201, 16, 46, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .instructions {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #007bff;
+            display: none;
+        }
+
+        .instructions h3 {
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+
+        .instructions p {
+            color: #0056b3;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .instructions strong {
+            color: #003d82;
+        }
+
+        @media (max-width: 600px) {
+            .newsletter-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="newsletter-container">
+        <div class="header">
+            <div class="logo">KW</div>
+            <h1>Add Me To Your Newsletter</h1>
+            <p class="subtitle">Stay updated with the latest real estate insights, market trends, and exclusive opportunities in your area.</p>
+        </div>
+
+        <form id="newsletterForm">
+            <div class="form-group">
+                <label for="name">Full Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number <span class="required">*</span></label>
+                <input type="tel" id="phone" name="phone" required placeholder="(555) 123-4567">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+            </div>
+
+            <button type="button" class="submit-btn" id="submitBtn" onclick="handleSubmit()">
+                Subscribe to Newsletter
+            </button>
+
+            <div id="message" class="message"></div>
+            
+            <div id="instructions" class="instructions">
+                <h3>📧 Email Instructions</h3>
+                <p><strong>What happens next:</strong></p>
+                <p>• Your default email app will open</p>
+                <p>• An email will be pre-filled with your information</p>
+                <p>• Click "Send" to submit your newsletter request</p>
+                <p>• The email will be sent to <strong>lori.mcnicholas@followupboss.me</strong></p>
+                <p><strong>Subject:</strong> KW Follow Up Boss Newsletter Lead</p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function handleSubmit() {
+            console.log('Button clicked!'); // Test if JavaScript is working
+            
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            
+            console.log('Form data:', {name, phone, email});
+            
+            // Basic validation
+            if (!name || !phone || !email) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            // Show loading
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '⏳ Opening Email...';
+            submitBtn.disabled = true;
+            
+            // Create email
+            const subject = 'KW Follow Up Boss Newsletter Lead';
+            const body = `New Newsletter Signup Lead
+
+Contact Information:
+Name: ${name}
+Phone: ${phone}
+Email: ${email}
+
+Action Required: Please create a new contact in Follow Up Boss with the above information.
+
+This lead was generated from the KW Newsletter signup form on ${new Date().toLocaleDateString()}.`;
+
+            const mailtoLink = `mailto:lori.mcnicholas@followupboss.me?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            console.log('Trying to open:', mailtoLink);
+            
+            // Try to open email
+            window.location.href = mailtoLink;
+            
+            // Show success message
+            setTimeout(() => {
+                alert('Email app should have opened! If not, please email the following information to lori.mcnicholas@followupboss.me:\n\nSubject: KW Follow Up Boss Newsletter Lead\n\nName: ' + name + '\nPhone: ' + phone + '\nEmail: ' + email);
+                
+                // Reset form
+                document.getElementById('newsletterForm').reset();
+                submitBtn.innerHTML = 'Subscribe to Newsletter';
+                submitBtn.disabled = false;
+            }, 1000);
+        }
+        
+        // Format phone number as user types
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 6) {
+                value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+            } else if (value.length >= 3) {
+                value = value.replace(/(\d{3})(\d{3})/, '($1) $2');
+            }
+            e.target.value = value;
+        });
+        
+        console.log('JavaScript loaded successfully!');
+    </script>
+</body>
+</html>
